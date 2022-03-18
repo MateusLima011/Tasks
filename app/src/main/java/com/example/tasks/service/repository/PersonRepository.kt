@@ -17,6 +17,7 @@ class PersonRepository(val context: Context) {
 
     fun login(email: String, password: String, listener: APIListener) {
         val call: Call<HeaderModel> = remote.login(email, password)
+
         call.enqueue(object : Callback<HeaderModel> {
             override fun onResponse(call: Call<HeaderModel>, response: Response<HeaderModel>) {
                 if (response.code() != TaskConstants.HTTP.SUCCESS) {
@@ -29,7 +30,29 @@ class PersonRepository(val context: Context) {
             }
 
             override fun onFailure(call: Call<HeaderModel>, t: Throwable) {
-                listener.onFailure(context.getString(com.example.tasks.R.string.ERROR_UNEXPECTED))
+                listener.onFailure("Um erro inesperado ocorreu, tente novamente mais tarde.")
+            }
+
+        })
+
+    }
+
+    fun create(name : String, email: String, password: String, listener: APIListener) {
+        val call: Call<HeaderModel> = remote.create(name, email, password)
+
+        call.enqueue(object : Callback<HeaderModel> {
+            override fun onResponse(call: Call<HeaderModel>, response: Response<HeaderModel>) {
+                if (response.code() != TaskConstants.HTTP.SUCCESS) {
+                    val validation =
+                        Gson().fromJson(response.errorBody()!!.string(), String::class.java)
+                    listener.onFailure(validation)
+                } else {
+                    response.body()?.let { listener.onSucess(it) }
+                }
+            }
+
+            override fun onFailure(call: Call<HeaderModel>, t: Throwable) {
+                listener.onFailure("Um erro inesperado ocorreu, tente novamente mais tarde.")
             }
 
         })
