@@ -29,11 +29,15 @@ class PriorityRepository(context: Context) {
             }
 
             override fun onFailure(call: Call<List<PriorityModel>>, t: Throwable) {
-                TODO("Not yet implemented")
+
             }
 
 
         })
 
     }
+
+    fun list() =
+        mPriorityDataBase.list()
+
 }
